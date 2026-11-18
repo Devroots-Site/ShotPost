@@ -1,0 +1,78 @@
+# Testdatenbanken fuer ShotPost: je SSMDB2-Version ein eigener MariaDB-Container.
+# Der Port zaehlt je Version hoch:
+#
+#   Version   Port   Datenbankname
+#   V5        3306   ssmdb2_v5
+#   V7        3307   ssmdb2_v7
+#   V8        3308   ssmdb2_v8
+#   V9        3309   ssmdb2_v9
+#
+# Zugang ueberall: Adresse localhost, Benutzer shotpost, Passwort shotpost (root: shotpost)
+#
+# Starten:         docker compose up -d
+# Stoppen:         docker compose down
+# Daten neu laden: docker compose down -v && docker compose up -d
+#
+# Die Container sind nur von diesem Rechner aus erreichbar (127.0.0.1) und
+# starten nach einem Neustart von Docker automatisch wieder.
+
+name: shotpost-testdb
+
+x-ssmdb: &ssmdb
+  image: mariadb:11
+  restart: unless-stopped
+  healthcheck:
+    test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+    interval: 5s
+    timeout: 5s
+    retries: 20
+
+x-credentials: &credentials
+  MARIADB_ROOT_PASSWORD: shotpost
+  MARIADB_USER: shotpost
+  MARIADB_PASSWORD: shotpost
+
+services:
+  ssmdb-v5:
+    <<: *ssmdb
+    container_name: shotpost-ssmdb-v5
+    environment:
+      <<: *credentials
+      MARIADB_DATABASE: ssmdb2_v5
+    ports:
+      - "127.0.0.1:3306:3306"
+    volumes:
+      - ./Database/ssmdb2_v5.sql:/docker-entrypoint-initdb.d/init.sql:ro
+
+  ssmdb-v7:
+    <<: *ssmdb
+    container_name: shotpost-ssmdb-v7
+    environment:
+      <<: *credentials
+      MARIADB_DATABASE: ssmdb2_v7
+    ports:
+      - "127.0.0.1:3307:3306"
+    volumes:
+      - ./Database/ssmdb2_v7.sql:/docker-entrypoint-initdb.d/init.sql:ro
+
+  ssmdb-v8:
+    <<: *ssmdb
+    container_name: shotpost-ssmdb-v8
+    environment:
+      <<: *credentials
+      MARIADB_DATABASE: ssmdb2_v8
+    ports:
+      - "127.0.0.1:3308:3306"
+    volumes:
+      - ./Database/ssmdb2_v8.sql:/docker-entrypoint-initdb.d/init.sql:ro
+
+  ssmdb-v9:
+    <<: *ssmdb
+    container_name: shotpost-ssmdb-v9
+    environment:
+      <<: *credentials
+      MARIADB_DATABASE: ssmdb2_v9
+    ports:
+      - "127.0.0.1:3309:3306"
+    volumes:
+      - ./Database/ssmdb2_v9.sql:/docker-entrypoint-initdb.d/init.sql:ro

@@ -1,0 +1,76 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="ShotPost.App"
+             xmlns:local="using:ShotPost"
+             RequestedThemeVariant="Default">
+             <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
+
+    <Application.DataTemplates>
+        <local:ViewLocator />
+    </Application.DataTemplates>
+
+    <Application.Resources>
+        <!-- Brand palette: defaults. Zur Laufzeit ueberschreibt ThemeService diese Werte
+             mit der in den Einstellungen gewaehlten Hauptfarbe (deshalb DynamicResource verwenden). -->
+        <Color x:Key="BrandPrimaryDark">#1E3A8A</Color>
+        <Color x:Key="BrandPrimary">#2563EB</Color>
+        <Color x:Key="BrandPrimaryLight">#3B82F6</Color>
+
+        <LinearGradientBrush x:Key="BrandBackgroundBrush" StartPoint="0%,0%" EndPoint="100%,100%">
+            <GradientStop Offset="0" Color="{StaticResource BrandPrimaryDark}" />
+            <GradientStop Offset="0.55" Color="{StaticResource BrandPrimary}" />
+            <GradientStop Offset="1" Color="{StaticResource BrandPrimaryLight}" />
+        </LinearGradientBrush>
+
+        <RadialGradientBrush x:Key="BrandGlowBrush">
+            <GradientStop Offset="0" Color="#33FFFFFF" />
+            <GradientStop Offset="1" Color="#00FFFFFF" />
+        </RadialGradientBrush>
+
+        <SolidColorBrush x:Key="BrandPrimaryBrush" Color="#2563EB" />
+        <SolidColorBrush x:Key="BrandPrimaryHoverBrush" Color="#3B82F6" />
+        <SolidColorBrush x:Key="BrandPrimaryPressedBrush" Color="#1E3A8A" />
+        <SolidColorBrush x:Key="BrandOnPrimaryBrush" Color="#FFFFFF" />
+        <SolidColorBrush x:Key="BrandSubtleBrush" Color="#DBEAFE" />
+        <SolidColorBrush x:Key="BrandTrackBrush" Color="#33FFFFFF" />
+    </Application.Resources>
+
+    <Application.Styles>
+        <FluentTheme />
+        <StyleInclude Source="avares://Avalonia.Controls.ColorPicker/Themes/Fluent/Fluent.xaml" />
+
+        <!-- Seitenueberschrift -->
+        <Style Selector="TextBlock.pageTitle">
+            <Setter Property="FontSize" Value="28" />
+            <Setter Property="FontWeight" Value="Bold" />
+        </Style>
+
+        <!-- Seitenabstaende; MainWindow verkleinert sie bei schmalem Fenster (Klasse "compact") -->
+        <Style Selector=":is(Panel).pageHeader">
+            <Setter Property="Margin" Value="32,24,32,8" />
+        </Style>
+        <Style Selector="TabControl.settingsTabs">
+            <Setter Property="Margin" Value="20,0,0,0" />
+        </Style>
+        <Style Selector=":is(Panel).tabPage">
+            <Setter Property="Margin" Value="12,16,32,24" />
+        </Style>
+        <Style Selector=":is(Panel).footer">
+            <Setter Property="Margin" Value="32,12" />
+        </Style>
+
+        <!-- Hauptaktion in der Hauptfarbe -->
+        <Style Selector="Button.primary">
+            <Setter Property="Background" Value="{DynamicResource BrandPrimaryBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource BrandOnPrimaryBrush}" />
+        </Style>
+        <Style Selector="Button.primary:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource BrandPrimaryHoverBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource BrandOnPrimaryBrush}" />
+        </Style>
+        <Style Selector="Button.primary:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource BrandPrimaryPressedBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource BrandOnPrimaryBrush}" />
+        </Style>
+    </Application.Styles>
+</Application>

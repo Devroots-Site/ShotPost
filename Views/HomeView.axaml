@@ -1,0 +1,28 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:ShotPost.ViewModels"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="ShotPost.Views.HomeView"
+             x:DataType="vm:HomeViewModel">
+
+    <Design.DataContext>
+        <vm:HomeViewModel />
+    </Design.DataContext>
+
+    <Grid RowDefinitions="Auto,*">
+        <Panel Classes="pageHeader">
+            <TextBlock Classes="pageTitle" Text="Start" />
+        </Panel>
+
+        <TextBlock Grid.Row="1"
+                   Margin="16"
+                   TextWrapping="Wrap"
+                   TextAlignment="Center"
+                   Text="Hier erscheinen später deine Ergebnisse."
+                   Opacity="0.55"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center" />
+    </Grid>
+</UserControl>
