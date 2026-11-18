@@ -1,0 +1,108 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:ShotPost.ViewModels"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="600"
+             x:Class="ShotPost.Views.DatabaseView"
+             x:DataType="vm:DatabaseViewModel">
+
+    <Design.DataContext>
+        <vm:DatabaseViewModel />
+    </Design.DataContext>
+
+    <UserControl.Styles>
+        <Style Selector="TabStrip.tables TabStripItem">
+            <Setter Property="FontSize" Value="15" />
+            <Setter Property="MinHeight" Value="36" />
+        </Style>
+        <Style Selector="TextBlock.hint">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Opacity" Value="0.6" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+        </Style>
+    </UserControl.Styles>
+
+    <Grid RowDefinitions="Auto,Auto,Auto,*,Auto">
+        <Panel Classes="pageHeader">
+            <TextBlock Classes="pageTitle" Text="Datenbank" />
+        </Panel>
+
+        <!-- Leiste oben: immer sichtbar -->
+        <WrapPanel Grid.Row="1" Classes="pageSide">
+            <Button Classes="primary"
+                    Content="Aktualisieren"
+                    ToolTip.Tip="Aktuellen Stand aus der Datenbank laden"
+                    Command="{Binding RefreshCommand}"
+                    VerticalAlignment="Center"
+                    Margin="0,0,16,8" />
+            <TabStrip Classes="tables"
+                      ItemsSource="{Binding Tables}"
+                      SelectedItem="{Binding SelectedTable}"
+                      IsVisible="{Binding ShowData}"
+                      VerticalAlignment="Center"
+                      Margin="0,0,16,8" />
+            <TextBlock Classes="hint"
+                       Text="{Binding ConnectionText}"
+                       VerticalAlignment="Center"
+                       Margin="0,0,0,8" />
+        </WrapPanel>
+
+        <ProgressBar Grid.Row="2"
+                     IsIndeterminate="True"
+                     IsVisible="{Binding IsLoading}"
+                     Foreground="{DynamicResource BrandPrimaryBrush}"
+                     Height="3" MinHeight="3" />
+
+        <!-- Eintraege -->
+        <DataGrid Grid.Row="3"
+                  Classes="pageSide"
+                  ItemsSource="{Binding Rows}"
+                  IsVisible="{Binding ShowData}"
+                  AutoGenerateColumns="True"
+                  IsReadOnly="True"
+                  CanUserResizeColumns="True"
+                  CanUserSortColumns="True"
+                  GridLinesVisibility="Horizontal"
+                  BorderThickness="1"
+                  BorderBrush="#33808080" />
+
+        <!-- Nicht eingerichtet oder Verbindung fehlgeschlagen -->
+        <StackPanel Grid.Row="3"
+                    IsVisible="{Binding ShowSetupPrompt}"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Spacing="12"
+                    Margin="24"
+                    MaxWidth="480">
+            <TextBlock Text="Keine Datenbank verbunden"
+                       FontSize="20" FontWeight="SemiBold"
+                       TextAlignment="Center" TextWrapping="Wrap" />
+            <TextBlock Text="Hinterlege in den Einstellungen die Zugangsdaten zur Meyton-Datenbank, um ihre Einträge hier zu sehen."
+                       IsVisible="{Binding !HasError}"
+                       Opacity="0.7" TextAlignment="Center" TextWrapping="Wrap" />
+            <TextBlock Text="{Binding ErrorMessage}"
+                       IsVisible="{Binding HasError}"
+                       Foreground="#DC2626" TextAlignment="Center" TextWrapping="Wrap" />
+            <Button Classes="primary"
+                    Content="Zu den Einstellungen"
+                    Command="{Binding OpenSettingsCommand}"
+                    HorizontalAlignment="Center" />
+        </StackPanel>
+
+        <!-- Blaettern -->
+        <Border Grid.Row="4" IsVisible="{Binding ShowData}">
+            <WrapPanel Classes="footer">
+                <TextBlock Text="Zeilen pro Seite" VerticalAlignment="Center" Margin="0,0,8,0" />
+                <ComboBox ItemsSource="{Binding PageSizeOptions}"
+                          SelectedItem="{Binding SelectedPageSize}"
+                          DisplayMemberBinding="{Binding Label}"
+                          MinWidth="90"
+                          Margin="0,0,16,0" />
+                <Button Content="Zurück" Command="{Binding PreviousPageCommand}" Margin="0,0,8,0" />
+                <Button Content="Weiter" Command="{Binding NextPageCommand}" Margin="0,0,16,0" />
+                <TextBlock Text="{Binding PageText}" VerticalAlignment="Center" />
+            </WrapPanel>
+        </Border>
+    </Grid>
+</UserControl>

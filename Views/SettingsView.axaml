@@ -64,7 +64,7 @@
             <TextBlock Classes="pageTitle" Text="Einstellungen" />
         </Panel>
 
-        <TabControl Grid.Row="1" Classes="settingsTabs">
+        <TabControl Grid.Row="1" Classes="settingsTabs" SelectedIndex="{Binding SelectedTabIndex}">
 
             <!-- Unterseite: Server -->
             <TabItem Header="Server">
