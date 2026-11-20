@@ -57,6 +57,13 @@ public partial class SettingsViewModel : ViewModelBase
         new(60, "Jede Stunde"),
     ];
 
+    /// <summary>Position der Unterseite "Datenbank" im TabControl der SettingsView.</summary>
+    public const int DatabaseTabIndex = 4;
+
+    /// <summary>Aktuell gezeigte Unterseite.</summary>
+    [ObservableProperty]
+    public partial int SelectedTabIndex { get; set; }
+
     // Server
     [ObservableProperty]
     public partial string ServerUrl { get; set; } = "";
@@ -184,15 +191,7 @@ public partial class SettingsViewModel : ViewModelBase
         }
 
         var dbName = DbName.Trim();
-        var builder = new MySqlConnectionStringBuilder
-        {
-            Server = DbHost.Trim(),
-            Port = (uint)DbPort.Value,
-            UserID = DbUser.Trim(),
-            Password = DbPassword,
-            Database = dbName,
-            ConnectionTimeout = 5,
-        };
+        var builder = SsmdbReader.BuildConnectionString(DbHost, (int)DbPort.Value, DbUser, DbPassword, dbName);
 
         SetDbTest("Verbindung wird geprüft…", isError: false);
         try
