@@ -1,0 +1,60 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:ShotPost.ViewModels"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="ShotPost.Views.LoadingView"
+             x:DataType="vm:LoadingViewModel">
+
+    <Design.DataContext>
+        <vm:LoadingViewModel />
+    </Design.DataContext>
+
+    <UserControl.Styles>
+        <!-- Slim, rounded indeterminate progress bar in brand colors -->
+        <Style Selector="ProgressBar.loading">
+            <Setter Property="Height" Value="4" />
+            <Setter Property="MinHeight" Value="4" />
+            <Setter Property="Width" Value="220" />
+            <Setter Property="CornerRadius" Value="2" />
+            <Setter Property="Foreground" Value="{DynamicResource BrandOnPrimaryBrush}" />
+            <Setter Property="Background" Value="{DynamicResource BrandTrackBrush}" />
+        </Style>
+    </UserControl.Styles>
+
+    <Grid Background="{DynamicResource BrandBackgroundBrush}">
+        <!-- Soft glow behind the title -->
+        <Ellipse Width="520" Height="520"
+                 HorizontalAlignment="Center" VerticalAlignment="Center"
+                 Fill="{DynamicResource BrandGlowBrush}"
+                 IsHitTestVisible="False" />
+
+        <StackPanel HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Spacing="10">
+            <TextBlock Text="{Binding Title}"
+                       FontSize="56"
+                       FontWeight="Bold"
+                       LetterSpacing="-1"
+                       Foreground="{DynamicResource BrandOnPrimaryBrush}"
+                       HorizontalAlignment="Center" />
+
+            <TextBlock Text="{Binding Subtitle}"
+                       FontSize="18"
+                       Foreground="{DynamicResource BrandSubtleBrush}"
+                       HorizontalAlignment="Center" />
+
+            <ProgressBar Classes="loading"
+                         IsIndeterminate="True"
+                         Margin="0,36,0,0"
+                         HorizontalAlignment="Center" />
+
+            <TextBlock Text="{Binding StatusText}"
+                       FontSize="12"
+                       Opacity="0.7"
+                       Foreground="{DynamicResource BrandSubtleBrush}"
+                       HorizontalAlignment="Center" />
+        </StackPanel>
+    </Grid>
+</UserControl>
