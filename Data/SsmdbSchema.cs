@@ -19,18 +19,21 @@ public sealed class SsmdbSchema
     public SsmdbSchema(string databaseName, Dictionary<string, HashSet<string>> columns)
     {
         DatabaseName = databaseName;
-        _columns = new Dictionary<string, HashSet<string>>(columns, StringComparer.OrdinalIgnoreCase);
+        _columns = new Dictionary<string, HashSet<string>>(
+            columns,
+            StringComparer.OrdinalIgnoreCase
+        );
     }
 
     public string DatabaseName { get; }
 
-    public bool Has(string table, string column)
-        => _columns.TryGetValue(table, out var cols) && cols.Contains(column);
+    public bool Has(string table, string column) =>
+        _columns.TryGetValue(table, out var cols) && cols.Contains(column);
 
     // Aenderungen gegenueber V5
-    public bool HasStandNrText => Has(TabelleScheiben, "StandNrText");          // ab V8
-    public bool HasTrefferSerie => Has(TabelleTreffer, "Serie");                // ab V8
-    public bool HasBesterTeiler001 => Has(TabelleScheiben, "BesterTeiler001");  // ab V9
+    public bool HasStandNrText => Has(TabelleScheiben, "StandNrText"); // ab V8
+    public bool HasTrefferSerie => Has(TabelleTreffer, "Serie"); // ab V8
+    public bool HasBesterTeiler001 => Has(TabelleScheiben, "BesterTeiler001"); // ab V9
 
     /// <summary>Grobe Einordnung fuer Logs/Anzeige. V5 und V7 sind an den Spaltennamen nicht unterscheidbar.</summary>
     public string VersionLabel =>

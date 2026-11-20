@@ -27,16 +27,19 @@ public partial class SettingsViewModel : ViewModelBase
 
     private readonly SettingsService _settingsService;
 
-    public SettingsViewModel() : this(new SettingsService())
-    {
-    }
+    public SettingsViewModel()
+        : this(new SettingsService()) { }
 
     public SettingsViewModel(SettingsService settingsService)
     {
         _settingsService = settingsService;
         SelectedSyncInterval = SyncIntervalOptions[2];
 
-        ScheibenTable = new DataTableViewModel("Scheiben", "Ein Ergebnis je Schütze und Scheibe.", typeof(Scheibe));
+        ScheibenTable = new DataTableViewModel(
+            "Scheiben",
+            "Ein Ergebnis je Schütze und Scheibe.",
+            typeof(Scheibe)
+        );
         SerienTable = new DataTableViewModel("Serien", "Summen je Serie.", typeof(Serie));
         TrefferTable = new DataTableViewModel("Treffer", "Jeder einzelne Schuss.", typeof(Treffer));
         Tables = [ScheibenTable, SerienTable, TrefferTable];
@@ -128,9 +131,13 @@ public partial class SettingsViewModel : ViewModelBase
     private void Save()
     {
         var url = ServerUrl.Trim();
-        if (url.Length > 0 &&
-            (!Uri.TryCreate(url, UriKind.Absolute, out var uri) ||
-             (uri.Scheme != Uri.UriSchemeHttp && uri.Scheme != Uri.UriSchemeHttps)))
+        if (
+            url.Length > 0
+            && (
+                !Uri.TryCreate(url, UriKind.Absolute, out var uri)
+                || (uri.Scheme != Uri.UriSchemeHttp && uri.Scheme != Uri.UriSchemeHttps)
+            )
+        )
         {
             SetStatus("Die Server-Adresse muss mit http:// oder https:// beginnen.", isError: true);
             return;
@@ -144,24 +151,26 @@ public partial class SettingsViewModel : ViewModelBase
 
         try
         {
-            _settingsService.Save(new AppSettings
-            {
-                ServerUrl = url,
-                SendScheiben = ScheibenTable.IsEnabled,
-                SendSerien = SerienTable.IsEnabled,
-                SendTreffer = TrefferTable.IsEnabled,
-                SendProbeschuesse = SendProbeschuesse,
-                ScheibenFelder = ScheibenTable.SelectedFieldNames,
-                SerienFelder = SerienTable.SelectedFieldNames,
-                TrefferFelder = TrefferTable.SelectedFieldNames,
-                PrimaryColor = ThemeService.ToHex(PrimaryColor),
-                SyncIntervalMinutes = SelectedSyncInterval.Minutes,
-                DbHost = DbHost.Trim(),
-                DbPort = (int)DbPort.Value,
-                DbUser = DbUser.Trim(),
-                DbPassword = DbPassword,
-                DbName = DbName.Trim(),
-            });
+            _settingsService.Save(
+                new AppSettings
+                {
+                    ServerUrl = url,
+                    SendScheiben = ScheibenTable.IsEnabled,
+                    SendSerien = SerienTable.IsEnabled,
+                    SendTreffer = TrefferTable.IsEnabled,
+                    SendProbeschuesse = SendProbeschuesse,
+                    ScheibenFelder = ScheibenTable.SelectedFieldNames,
+                    SerienFelder = SerienTable.SelectedFieldNames,
+                    TrefferFelder = TrefferTable.SelectedFieldNames,
+                    PrimaryColor = ThemeService.ToHex(PrimaryColor),
+                    SyncIntervalMinutes = SelectedSyncInterval.Minutes,
+                    DbHost = DbHost.Trim(),
+                    DbPort = (int)DbPort.Value,
+                    DbUser = DbUser.Trim(),
+                    DbPassword = DbPassword,
+                    DbName = DbName.Trim(),
+                }
+            );
             ServerUrl = url;
             SetStatus("Einstellungen gespeichert.", isError: false);
         }
@@ -191,7 +200,13 @@ public partial class SettingsViewModel : ViewModelBase
         }
 
         var dbName = DbName.Trim();
-        var builder = SsmdbReader.BuildConnectionString(DbHost, (int)DbPort.Value, DbUser, DbPassword, dbName);
+        var builder = SsmdbReader.BuildConnectionString(
+            DbHost,
+            (int)DbPort.Value,
+            DbUser,
+            DbPassword,
+            dbName
+        );
 
         SetDbTest("Verbindung wird geprüft…", isError: false);
         try
@@ -200,13 +215,17 @@ public partial class SettingsViewModel : ViewModelBase
             await using var connection = new MySqlConnection(builder.ConnectionString);
             await connection.OpenAsync(cts.Token);
             var schema = await SsmdbSchemaDetector.DetectAsync(connection, dbName, cts.Token);
-            SetDbTest($"Verbindung erfolgreich. Erkannte SSMDB2-Version: {schema.VersionLabel}.", isError: false);
+            SetDbTest(
+                $"Verbindung erfolgreich. Erkannte SSMDB2-Version: {schema.VersionLabel}.",
+                isError: false
+            );
         }
         catch (OperationCanceledException)
         {
             SetDbTest("Zeitüberschreitung beim Verbinden.", isError: true);
         }
-        catch (Exception ex) when (ex is MySqlException or SsmdbSchemaException or InvalidOperationException)
+        catch (Exception ex)
+            when (ex is MySqlException or SsmdbSchemaException or InvalidOperationException)
         {
             SetDbTest($"Verbindung fehlgeschlagen: {ex.Message}", isError: true);
         }
@@ -220,8 +239,9 @@ public partial class SettingsViewModel : ViewModelBase
         TrefferTable.Load(s.SendTreffer, s.TrefferFelder);
         SendProbeschuesse = s.SendProbeschuesse;
         PrimaryColor = ThemeService.ParseOrDefault(s.PrimaryColor);
-        SelectedSyncInterval =
-            SyncIntervalOptions.FirstOrDefault(o => o.Minutes == s.SyncIntervalMinutes) ?? SyncIntervalOptions[2];
+        SelectedSyncInterval = SyncIntervalOptions.FirstOrDefault(o =>
+            o.Minutes == s.SyncIntervalMinutes
+        ) ?? SyncIntervalOptions[2];
         DbHost = s.DbHost;
         DbPort = s.DbPort;
         DbUser = s.DbUser;
@@ -235,11 +255,20 @@ public partial class SettingsViewModel : ViewModelBase
     {
         var payload = new Dictionary<string, object?>();
         if (ScheibenTable.IsEnabled)
-            payload["Scheiben"] = new[] { PayloadBuilder.Build(new Scheibe(), ScheibenTable.SelectedFieldNames) };
+            payload["Scheiben"] = new[]
+            {
+                PayloadBuilder.Build(new Scheibe(), ScheibenTable.SelectedFieldNames),
+            };
         if (SerienTable.IsEnabled)
-            payload["Serien"] = new[] { PayloadBuilder.Build(new Serie(), SerienTable.SelectedFieldNames) };
+            payload["Serien"] = new[]
+            {
+                PayloadBuilder.Build(new Serie(), SerienTable.SelectedFieldNames),
+            };
         if (TrefferTable.IsEnabled)
-            payload["Treffer"] = new[] { PayloadBuilder.Build(new Treffer(), TrefferTable.SelectedFieldNames) };
+            payload["Treffer"] = new[]
+            {
+                PayloadBuilder.Build(new Treffer(), TrefferTable.SelectedFieldNames),
+            };
 
         PayloadPreview = JsonSerializer.Serialize(payload, PreviewJsonOptions);
     }

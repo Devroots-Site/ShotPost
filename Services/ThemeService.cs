@@ -10,8 +10,8 @@ public static class ThemeService
 {
     public static Color DefaultPrimary { get; } = Color.Parse(AppSettings.DefaultPrimaryColor);
 
-    public static Color ParseOrDefault(string? hex)
-        => Color.TryParse(hex, out var color) ? color : DefaultPrimary;
+    public static Color ParseOrDefault(string? hex) =>
+        Color.TryParse(hex, out var color) ? color : DefaultPrimary;
 
     public static string ToHex(Color color) => $"#{color.R:X2}{color.G:X2}{color.B:X2}";
 

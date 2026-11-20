@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using MySqlConnector;
@@ -15,19 +16,25 @@ public sealed record SsmdbPage(IList Rows, long TotalCount, string VersionLabel)
 /// <summary>Lesender Zugriff auf die Meyton-Datenbank. Fuehrt ausschliesslich SELECTs aus.</summary>
 public static class SsmdbReader
 {
-    public static MySqlConnectionStringBuilder BuildConnectionString(AppSettings s)
-        => BuildConnectionString(s.DbHost, s.DbPort, s.DbUser, s.DbPassword, s.DbName);
+    public static MySqlConnectionStringBuilder BuildConnectionString(AppSettings s) =>
+        BuildConnectionString(s.DbHost, s.DbPort, s.DbUser, s.DbPassword, s.DbName);
 
     public static MySqlConnectionStringBuilder BuildConnectionString(
-        string host, int port, string user, string password, string database) => new()
-    {
-        Server = host.Trim(),
-        Port = (uint)port,
-        UserID = user.Trim(),
-        Password = password,
-        Database = database.Trim(),
-        ConnectionTimeout = 5,
-    };
+        string host,
+        int port,
+        string user,
+        string password,
+        string database
+    ) =>
+        new()
+        {
+            Server = host.Trim(),
+            Port = (uint)port,
+            UserID = user.Trim(),
+            Password = password,
+            Database = database.Trim(),
+            ConnectionTimeout = 5,
+        };
 
     /// <param name="settings">Zugangsdaten.</param>
     /// <param name="table">SsmdbSchema.TabelleScheiben, TabelleSerien oder TabelleTreffer.</param>
@@ -35,10 +42,17 @@ public static class SsmdbReader
     /// <param name="offset">Anzahl zu ueberspringender Zeilen.</param>
     /// <param name="ct">Abbruch.</param>
     public static async Task<SsmdbPage> ReadPageAsync(
-        AppSettings settings, string table, int? limit, long offset, CancellationToken ct = default)
+        AppSettings settings,
+        string table,
+        int? limit,
+        long offset,
+        CancellationToken ct = default
+    )
     {
         var databaseName = settings.DbName.Trim();
-        await using var connection = new MySqlConnection(BuildConnectionString(settings).ConnectionString);
+        await using var connection = new MySqlConnection(
+            BuildConnectionString(settings).ConnectionString
+        );
         await connection.OpenAsync(ct);
         var schema = await SsmdbSchemaDetector.DetectAsync(connection, databaseName, ct);
 
@@ -65,7 +79,10 @@ public static class SsmdbReader
 
         long total;
         await using (var countCmd = new MySqlCommand($"SELECT COUNT(*) FROM `{table}`", connection))
-            total = Convert.ToInt64(await countCmd.ExecuteScalarAsync(ct));
+            total = Convert.ToInt64(
+                await countCmd.ExecuteScalarAsync(ct),
+                CultureInfo.InvariantCulture
+            );
 
         await using var cmd = new MySqlCommand(sql, connection);
         if (limit is { } pageSize)

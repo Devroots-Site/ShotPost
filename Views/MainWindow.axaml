@@ -1,122 +1,136 @@
-<Window xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:vm="using:ShotPost.ViewModels"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="640"
-        x:Class="ShotPost.Views.MainWindow"
-        x:DataType="vm:MainViewModel"
-        Icon="/Assets/avalonia-logo.ico"
-        Width="1280" Height="800"
-        MinWidth="400" MinHeight="360"
-        WindowStartupLocation="CenterScreen"
-        Title="ShootPost">
-
-    <Design.DataContext>
-        <!-- This only sets the DataContext for the previewer in an IDE,
+<Window
+  xmlns="https://github.com/avaloniaui"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:vm="using:ShotPost.ViewModels"
+  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+  mc:Ignorable="d"
+  d:DesignWidth="1000"
+  d:DesignHeight="640"
+  x:Class="ShotPost.Views.MainWindow"
+  x:DataType="vm:MainViewModel"
+  Icon="/Assets/avalonia-logo.ico"
+  Width="1280"
+  Height="800"
+  MinWidth="400"
+  MinHeight="360"
+  WindowStartupLocation="CenterScreen"
+  Title="ShootPost"
+>
+  <Design.DataContext>
+    <!-- This only sets the DataContext for the previewer in an IDE,
              to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
-        <vm:MainViewModel />
-    </Design.DataContext>
+    <vm:MainViewModel />
+  </Design.DataContext>
 
-    <Window.Styles>
-        <!-- Navigation: breit = Seitenleiste links, schmal ("compact") = Leiste oben.
+  <Window.Styles>
+    <!-- Navigation: breit = Seitenleiste links, schmal ("compact") = Leiste oben.
              Die Klasse "compact" setzt MainWindow.axaml.cs abhaengig von der Fensterbreite. -->
-        <Style Selector="Border#Sidebar">
-            <Setter Property="DockPanel.Dock" Value="Left" />
-            <Setter Property="Width" Value="200" />
-        </Style>
-        <Style Selector="StackPanel#NavPanel">
-            <Setter Property="Orientation" Value="Vertical" />
-            <Setter Property="Margin" Value="12,20" />
-        </Style>
-        <Style Selector="TextBlock#NavTitle">
-            <Setter Property="Margin" Value="14,0,0,20" />
-        </Style>
+    <Style Selector="Border#Sidebar">
+      <Setter Property="DockPanel.Dock" Value="Left" />
+      <Setter Property="Width" Value="200" />
+    </Style>
+    <Style Selector="StackPanel#NavPanel">
+      <Setter Property="Orientation" Value="Vertical" />
+      <Setter Property="Margin" Value="12,20" />
+    </Style>
+    <Style Selector="TextBlock#NavTitle">
+      <Setter Property="Margin" Value="14,0,0,20" />
+    </Style>
 
-        <Style Selector="Window.compact Border#Sidebar">
-            <Setter Property="DockPanel.Dock" Value="Top" />
-            <Setter Property="Width" Value="NaN" />
-        </Style>
-        <Style Selector="Window.compact StackPanel#NavPanel">
-            <Setter Property="Orientation" Value="Horizontal" />
-            <Setter Property="Margin" Value="8,6" />
-        </Style>
-        <Style Selector="Window.compact TextBlock#NavTitle">
-            <Setter Property="Margin" Value="8,0,12,0" />
-            <Setter Property="FontSize" Value="18" />
-        </Style>
+    <Style Selector="Window.compact Border#Sidebar">
+      <Setter Property="DockPanel.Dock" Value="Top" />
+      <Setter Property="Width" Value="NaN" />
+    </Style>
+    <Style Selector="Window.compact StackPanel#NavPanel">
+      <Setter Property="Orientation" Value="Horizontal" />
+      <Setter Property="Margin" Value="8,6" />
+    </Style>
+    <Style Selector="Window.compact TextBlock#NavTitle">
+      <Setter Property="Margin" Value="8,0,12,0" />
+      <Setter Property="FontSize" Value="18" />
+    </Style>
 
-        <!-- Kleinere Seitenabstaende bei schmalem Fenster -->
-        <Style Selector="Window.compact :is(Panel).pageHeader">
-            <Setter Property="Margin" Value="16,12,16,4" />
-        </Style>
-        <Style Selector="Window.compact TabControl.settingsTabs">
-            <Setter Property="Margin" Value="4,0,0,0" />
-        </Style>
-        <Style Selector="Window.compact :is(Panel).tabPage">
-            <Setter Property="Margin" Value="12,12,16,16" />
-        </Style>
-        <Style Selector="Window.compact :is(Control).pageSide">
-            <Setter Property="Margin" Value="16,0" />
-        </Style>
-        <Style Selector="Window.compact :is(Panel).footer">
-            <Setter Property="Margin" Value="16,10" />
-        </Style>
+    <!-- Kleinere Seitenabstaende bei schmalem Fenster -->
+    <Style Selector="Window.compact :is(Panel).pageHeader">
+      <Setter Property="Margin" Value="16,12,16,4" />
+    </Style>
+    <Style Selector="Window.compact TabControl.settingsTabs">
+      <Setter Property="Margin" Value="4,0,0,0" />
+    </Style>
+    <Style Selector="Window.compact :is(Panel).tabPage">
+      <Setter Property="Margin" Value="12,12,16,16" />
+    </Style>
+    <Style Selector="Window.compact :is(Control).pageSide">
+      <Setter Property="Margin" Value="16,0" />
+    </Style>
+    <Style Selector="Window.compact :is(Panel).footer">
+      <Setter Property="Margin" Value="16,10" />
+    </Style>
 
-        <!-- Eintraege der Navigation -->
-        <Style Selector="Button.nav">
-            <Setter Property="HorizontalAlignment" Value="Stretch" />
-            <Setter Property="HorizontalContentAlignment" Value="Left" />
-            <Setter Property="VerticalAlignment" Value="Center" />
-            <Setter Property="Padding" Value="14,10" />
-            <Setter Property="CornerRadius" Value="6" />
-            <Setter Property="Background" Value="Transparent" />
-            <Setter Property="Foreground" Value="{DynamicResource BrandOnPrimaryBrush}" />
-        </Style>
-        <Style Selector="Button.nav:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="#1FFFFFFF" />
-            <Setter Property="Foreground" Value="{DynamicResource BrandOnPrimaryBrush}" />
-        </Style>
-        <Style Selector="Button.nav:pressed /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="#33FFFFFF" />
-            <Setter Property="Foreground" Value="{DynamicResource BrandOnPrimaryBrush}" />
-        </Style>
-        <Style Selector="Button.nav.active">
-            <Setter Property="Background" Value="#33FFFFFF" />
-            <Setter Property="FontWeight" Value="SemiBold" />
-        </Style>
-        <Style Selector="Button.nav.active:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="#40FFFFFF" />
-        </Style>
-    </Window.Styles>
+    <!-- Eintraege der Navigation -->
+    <Style Selector="Button.nav">
+      <Setter Property="HorizontalAlignment" Value="Stretch" />
+      <Setter Property="HorizontalContentAlignment" Value="Left" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+      <Setter Property="Padding" Value="14,10" />
+      <Setter Property="CornerRadius" Value="6" />
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="Foreground" Value="{DynamicResource BrandOnPrimaryBrush}" />
+    </Style>
+    <Style Selector="Button.nav:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="#1FFFFFFF" />
+      <Setter Property="Foreground" Value="{DynamicResource BrandOnPrimaryBrush}" />
+    </Style>
+    <Style Selector="Button.nav:pressed /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="#33FFFFFF" />
+      <Setter Property="Foreground" Value="{DynamicResource BrandOnPrimaryBrush}" />
+    </Style>
+    <Style Selector="Button.nav.active">
+      <Setter Property="Background" Value="#33FFFFFF" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+    <Style Selector="Button.nav.active:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="#40FFFFFF" />
+    </Style>
+  </Window.Styles>
 
-    <DockPanel>
-        <Border Name="Sidebar"
-                Background="{DynamicResource BrandBackgroundBrush}"
-                IsVisible="{Binding IsNavigationVisible}">
-            <StackPanel Name="NavPanel" Spacing="4">
-                <TextBlock Name="NavTitle"
-                           Text="ShootPost"
-                           FontSize="22"
-                           FontWeight="Bold"
-                           VerticalAlignment="Center"
-                           Foreground="{DynamicResource BrandOnPrimaryBrush}" />
-                <Button Classes="nav"
-                        Classes.active="{Binding IsHomeActive}"
-                        Content="Start"
-                        Command="{Binding ShowHomeCommand}" />
-                <Button Classes="nav"
-                        Classes.active="{Binding IsDatabaseActive}"
-                        Content="Datenbank"
-                        Command="{Binding ShowDatabaseCommand}" />
-                <Button Classes="nav"
-                        Classes.active="{Binding IsSettingsActive}"
-                        Content="Einstellungen"
-                        Command="{Binding ShowSettingsCommand}" />
-            </StackPanel>
-        </Border>
+  <DockPanel>
+    <Border
+      Name="Sidebar"
+      Background="{DynamicResource BrandBackgroundBrush}"
+      IsVisible="{Binding IsNavigationVisible}"
+    >
+      <StackPanel Name="NavPanel" Spacing="4">
+        <TextBlock
+          Name="NavTitle"
+          Text="ShootPost"
+          FontSize="22"
+          FontWeight="Bold"
+          VerticalAlignment="Center"
+          Foreground="{DynamicResource BrandOnPrimaryBrush}"
+        />
+        <Button
+          Classes="nav"
+          Classes.active="{Binding IsHomeActive}"
+          Content="Start"
+          Command="{Binding ShowHomeCommand}"
+        />
+        <Button
+          Classes="nav"
+          Classes.active="{Binding IsDatabaseActive}"
+          Content="Datenbank"
+          Command="{Binding ShowDatabaseCommand}"
+        />
+        <Button
+          Classes="nav"
+          Classes.active="{Binding IsSettingsActive}"
+          Content="Einstellungen"
+          Command="{Binding ShowSettingsCommand}"
+        />
+      </StackPanel>
+    </Border>
 
-        <ContentControl Content="{Binding CurrentView}" />
-    </DockPanel>
-
+    <ContentControl Content="{Binding CurrentView}" />
+  </DockPanel>
 </Window>
