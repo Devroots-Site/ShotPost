@@ -7,3 +7,11 @@ obj/
 .idea/
 *.user
 *.suo
+
+# Dokumentation (VitePress)
+docs/node_modules/
+docs/.vitepress/dist/
+docs/.vitepress/cache/
+
+# Claude Code: persoenliche Einstellungen
+.claude/settings.local.json
