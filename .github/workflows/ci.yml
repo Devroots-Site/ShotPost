@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+jobs:
+  build:
+    name: Format, Build, Typpruefung
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Repository auschecken
+        uses: actions/checkout@v4
+
+      - name: .NET SDK einrichten
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: NuGet-Pakete cachen
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('ShotPost.csproj', 'dotnet-tools.json') }}
+          restore-keys: nuget-${{ runner.os }}-
+
+      - name: Lokale Tools wiederherstellen
+        run: dotnet tool restore
+
+      - name: Formatierung pruefen (CSharpier)
+        run: dotnet csharpier check .
+
+      - name: Abhaengigkeiten wiederherstellen
+        run: dotnet restore ShotPost.csproj
+
+      # CI=true ist auf GitHub-Runnern gesetzt: Compiler-, Nullable-, Analyzer- und
+      # .editorconfig-Stilwarnungen brechen dadurch den Build (siehe ShotPost.csproj).
+      - name: Build und Typpruefung
+        run: dotnet build ShotPost.csproj --configuration Release --no-restore

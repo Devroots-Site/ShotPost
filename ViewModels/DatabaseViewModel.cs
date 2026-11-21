@@ -26,9 +26,8 @@ public partial class DatabaseViewModel : ViewModelBase
     private CancellationTokenSource? _loadCts;
     private bool _activated;
 
-    public DatabaseViewModel() : this(new SettingsService(), () => { })
-    {
-    }
+    public DatabaseViewModel()
+        : this(new SettingsService(), () => { }) { }
 
     /// <param name="settingsService">Quelle der gespeicherten Zugangsdaten.</param>
     /// <param name="openSettings">Oeffnet die Einstellungen auf der Unterseite "Datenbank".</param>
@@ -41,14 +40,10 @@ public partial class DatabaseViewModel : ViewModelBase
     }
 
     public IReadOnlyList<string> Tables { get; } =
-        [SsmdbSchema.TabelleScheiben, SsmdbSchema.TabelleSerien, SsmdbSchema.TabelleTreffer];
+    [SsmdbSchema.TabelleScheiben, SsmdbSchema.TabelleSerien, SsmdbSchema.TabelleTreffer];
 
     public IReadOnlyList<PageSizeOption> PageSizeOptions { get; } =
-    [
-        new(100, "100"),
-        new(1000, "1000"),
-        new(null, "Alle"),
-    ];
+    [new(100, "100"), new(1000, "1000"), new(null, "Alle")];
 
     [ObservableProperty]
     public partial string SelectedTable { get; set; }
@@ -141,9 +136,10 @@ public partial class DatabaseViewModel : ViewModelBase
         var cts = _loadCts = new CancellationTokenSource();
 
         var settings = _settingsService.Load();
-        IsConfigured = !string.IsNullOrWhiteSpace(settings.DbHost)
-                       && !string.IsNullOrWhiteSpace(settings.DbUser)
-                       && !string.IsNullOrWhiteSpace(settings.DbName);
+        IsConfigured =
+            !string.IsNullOrWhiteSpace(settings.DbHost)
+            && !string.IsNullOrWhiteSpace(settings.DbUser)
+            && !string.IsNullOrWhiteSpace(settings.DbName);
         if (!IsConfigured)
         {
             ErrorMessage = "";
@@ -160,14 +156,24 @@ public partial class DatabaseViewModel : ViewModelBase
 
             var size = SelectedPageSize.Size;
             var page = await SsmdbReader.ReadPageAsync(
-                settings, SelectedTable, size, (long)PageIndex * (size ?? 0), timeout.Token);
+                settings,
+                SelectedTable,
+                size,
+                (long)PageIndex * (size ?? 0),
+                timeout.Token
+            );
 
             // Die Tabelle ist seit dem letzten Laden geschrumpft: auf die letzte vorhandene Seite springen.
             if (size is { } s && page.Rows.Count == 0 && page.TotalCount > 0 && PageIndex > 0)
             {
                 PageIndex = (int)((page.TotalCount - 1) / s);
                 page = await SsmdbReader.ReadPageAsync(
-                    settings, SelectedTable, size, (long)PageIndex * s, timeout.Token);
+                    settings,
+                    SelectedTable,
+                    size,
+                    (long)PageIndex * s,
+                    timeout.Token
+                );
             }
 
             if (cts.IsCancellationRequested)
@@ -178,7 +184,8 @@ public partial class DatabaseViewModel : ViewModelBase
             Rows = page.Rows;
             ConnectionText =
                 $"{settings.DbName.Trim()} @ {settings.DbHost.Trim()}:{settings.DbPort} · SSMDB2 {page.VersionLabel} · Stand {DateTime.Now:HH:mm:ss}";
-            PageText = $"Seite {PageIndex + 1} von {TotalPages} · {TotalCount} {(TotalCount == 1 ? "Eintrag" : "Einträge")}";
+            PageText =
+                $"Seite {PageIndex + 1} von {TotalPages} · {TotalCount} {(TotalCount == 1 ? "Eintrag" : "Einträge")}";
             NextPageCommand.NotifyCanExecuteChanged();
         }
         catch (OperationCanceledException) when (cts.IsCancellationRequested)
@@ -189,7 +196,8 @@ public partial class DatabaseViewModel : ViewModelBase
         {
             ShowError("Zeitüberschreitung beim Laden der Daten.");
         }
-        catch (Exception ex) when (ex is MySqlException or SsmdbSchemaException or InvalidOperationException)
+        catch (Exception ex)
+            when (ex is MySqlException or SsmdbSchemaException or InvalidOperationException)
         {
             ShowError($"Verbindung fehlgeschlagen: {ex.Message}");
         }

@@ -12,9 +12,8 @@ public partial class MainViewModel : ViewModelBase
     private readonly DatabaseViewModel _database;
     private readonly SettingsViewModel _settings;
 
-    public MainViewModel() : this(new SettingsService())
-    {
-    }
+    public MainViewModel()
+        : this(new SettingsService()) { }
 
     public MainViewModel(SettingsService settingsService)
     {
@@ -28,7 +27,11 @@ public partial class MainViewModel : ViewModelBase
     /// </summary>
     [ObservableProperty]
     [NotifyPropertyChangedFor(
-        nameof(IsNavigationVisible), nameof(IsHomeActive), nameof(IsDatabaseActive), nameof(IsSettingsActive))]
+        nameof(IsNavigationVisible),
+        nameof(IsHomeActive),
+        nameof(IsDatabaseActive),
+        nameof(IsSettingsActive)
+    )]
     public partial ViewModelBase CurrentView { get; set; } = new LoadingViewModel();
 
     /// <summary>Die Navigation bleibt waehrend des Ladebildschirms ausgeblendet.</summary>

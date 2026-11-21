@@ -17,27 +17,37 @@ public static class PayloadBuilder
     {
         [typeof(Scheibe)] = [nameof(Scheibe.ScheibenID)],
         [typeof(Serie)] = [nameof(Serie.ScheibenID), nameof(Serie.Stellung), nameof(Serie.SerieNr)],
-        [typeof(Treffer)] = [nameof(Treffer.ScheibenID), nameof(Treffer.Stellung), nameof(Treffer.TrefferNr)],
+        [typeof(Treffer)] =
+        [
+            nameof(Treffer.ScheibenID),
+            nameof(Treffer.Stellung),
+            nameof(Treffer.TrefferNr),
+        ],
     };
 
     /// <summary>Alle sendbaren Felder eines Modells (oeffentliche Properties mit Setter), in Deklarationsreihenfolge.</summary>
-    public static IReadOnlyList<string> GetFieldNames(Type modelType)
-        => GetProperties(modelType).Select(p => p.Name).ToList();
+    public static IReadOnlyList<string> GetFieldNames(Type modelType) =>
+        GetProperties(modelType).Select(p => p.Name).ToList();
 
-    public static bool IsKeyField(Type modelType, string fieldName)
-        => KeyFields.TryGetValue(modelType, out var keys) && keys.Contains(fieldName);
+    public static bool IsKeyField(Type modelType, string fieldName) =>
+        KeyFields.TryGetValue(modelType, out var keys) && keys.Contains(fieldName);
 
     /// <param name="item">Der zu sendende Datensatz.</param>
     /// <param name="selectedFields">Ausgewaehlte Feldnamen; <c>null</c> = alle Felder.</param>
-    public static Dictionary<string, object?> Build<T>(T item, IReadOnlyCollection<string>? selectedFields)
+    public static Dictionary<string, object?> Build<T>(
+        T item,
+        IReadOnlyCollection<string>? selectedFields
+    )
         where T : class
     {
         var result = new Dictionary<string, object?>();
         foreach (var property in GetProperties(typeof(T)))
         {
-            if (selectedFields is null
+            if (
+                selectedFields is null
                 || selectedFields.Contains(property.Name)
-                || IsKeyField(typeof(T), property.Name))
+                || IsKeyField(typeof(T), property.Name)
+            )
             {
                 result[property.Name] = property.GetValue(item);
             }
@@ -46,8 +56,8 @@ public static class PayloadBuilder
         return result;
     }
 
-    private static IEnumerable<PropertyInfo> GetProperties(Type modelType)
-        => modelType
+    private static IEnumerable<PropertyInfo> GetProperties(Type modelType) =>
+        modelType
             .GetProperties(BindingFlags.Public | BindingFlags.Instance)
             .Where(p => p.CanRead && p.SetMethod is { IsPublic: true })
             .OrderBy(p => p.MetadataToken);

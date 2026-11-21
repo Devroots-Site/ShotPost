@@ -1,0 +1,5 @@
+# Zeilenenden: im Repository immer LF, im Arbeitsverzeichnis plattformabhaengig
+* text=auto
+
+*.ico binary
+*.png binary

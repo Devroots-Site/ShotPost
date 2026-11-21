@@ -12,12 +12,17 @@ public static class SsmdbSchemaDetector
 {
     private static readonly string[] Tabellen =
     [
-        SsmdbSchema.TabelleScheiben, SsmdbSchema.TabelleSerien, SsmdbSchema.TabelleTreffer
+        SsmdbSchema.TabelleScheiben,
+        SsmdbSchema.TabelleSerien,
+        SsmdbSchema.TabelleTreffer,
     ];
 
     /// <summary>Liest die vorhandenen Spalten aus information_schema. Nur lesender Zugriff.</summary>
     public static async Task<SsmdbSchema> DetectAsync(
-        MySqlConnection connection, string databaseName, CancellationToken ct = default)
+        MySqlConnection connection,
+        string databaseName,
+        CancellationToken ct = default
+    )
     {
         const string sql = """
             SELECT TABLE_NAME, COLUMN_NAME
@@ -44,7 +49,8 @@ public static class SsmdbSchemaDetector
         {
             if (!columns.ContainsKey(t))
                 throw new SsmdbSchemaException(
-                    $"Tabelle '{t}' fehlt in der Datenbank '{databaseName}'. Ist das eine SSMDB2?");
+                    $"Tabelle '{t}' fehlt in der Datenbank '{databaseName}'. Ist das eine SSMDB2?"
+                );
         }
 
         return new SsmdbSchema(databaseName, columns);

@@ -1,282 +1,372 @@
-<UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:vm="using:ShotPost.ViewModels"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="700"
-             x:Class="ShotPost.Views.SettingsView"
-             x:DataType="vm:SettingsViewModel">
+<UserControl
+  xmlns="https://github.com/avaloniaui"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:vm="using:ShotPost.ViewModels"
+  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+  mc:Ignorable="d"
+  d:DesignWidth="900"
+  d:DesignHeight="700"
+  x:Class="ShotPost.Views.SettingsView"
+  x:DataType="vm:SettingsViewModel"
+>
+  <Design.DataContext>
+    <vm:SettingsViewModel />
+  </Design.DataContext>
 
-    <Design.DataContext>
-        <vm:SettingsViewModel />
-    </Design.DataContext>
+  <UserControl.Styles>
+    <!-- Unterseiten als Reiter; die Reiter brechen bei schmalem Fenster um -->
+    <Style Selector="TabControl.settingsTabs">
+      <Setter Property="Padding" Value="0" />
+      <Setter Property="ItemsPanel">
+        <ItemsPanelTemplate>
+          <WrapPanel />
+        </ItemsPanelTemplate>
+      </Setter>
+    </Style>
+    <Style Selector="TabControl.settingsTabs TabItem">
+      <Setter Property="FontSize" Value="15" />
+      <Setter Property="MinHeight" Value="40" />
+    </Style>
 
-    <UserControl.Styles>
-        <!-- Unterseiten als Reiter; die Reiter brechen bei schmalem Fenster um -->
-        <Style Selector="TabControl.settingsTabs">
-            <Setter Property="Padding" Value="0" />
-            <Setter Property="ItemsPanel">
+    <Style Selector="Border.card">
+      <Setter Property="VerticalAlignment" Value="Top" />
+      <Setter Property="Padding" Value="20" />
+      <Setter Property="CornerRadius" Value="8" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="BorderBrush" Value="#33808080" />
+      <Setter Property="Background" Value="#0D808080" />
+    </Style>
+    <Style Selector="TextBlock.cardTitle">
+      <Setter Property="FontSize" Value="16" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+    <Style Selector="TextBlock.hint">
+      <Setter Property="FontSize" Value="12" />
+      <Setter Property="Opacity" Value="0.6" />
+      <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
+    <Style Selector="TextBlock.label">
+      <Setter Property="VerticalAlignment" Value="Center" />
+      <Setter Property="Margin" Value="0,0,16,0" />
+    </Style>
+    <Style Selector="TextBlock.error">
+      <Setter Property="Foreground" Value="#DC2626" />
+    </Style>
+    <Style Selector="Button.swatch">
+      <Setter Property="Width" Value="28" />
+      <Setter Property="Height" Value="28" />
+      <Setter Property="Padding" Value="0" />
+      <Setter Property="Margin" Value="0,0,8,8" />
+      <Setter Property="CornerRadius" Value="14" />
+    </Style>
+  </UserControl.Styles>
+
+  <Grid RowDefinitions="Auto,*,Auto">
+    <Panel Classes="pageHeader">
+      <TextBlock Classes="pageTitle" Text="Einstellungen" />
+    </Panel>
+
+    <TabControl Grid.Row="1" Classes="settingsTabs" SelectedIndex="{Binding SelectedTabIndex}">
+      <!-- Unterseite: Server -->
+      <TabItem Header="Server">
+        <ScrollViewer>
+          <Grid Classes="tabPage">
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="*" MaxWidth="760" />
+              <ColumnDefinition Width="0.001*" />
+            </Grid.ColumnDefinitions>
+            <Border Classes="card">
+              <StackPanel Spacing="10">
+                <TextBlock Classes="cardTitle" Text="Server" />
+                <TextBlock Classes="hint" Text="Wohin die Daten geschickt werden." />
+                <TextBox Text="{Binding ServerUrl}" PlaceholderText="https://mein-server.de/api" />
+              </StackPanel>
+            </Border>
+          </Grid>
+        </ScrollViewer>
+      </TabItem>
+
+      <!-- Unterseite: Daten (Feldauswahl) -->
+      <TabItem Header="Daten">
+        <ScrollViewer>
+          <StackPanel Classes="tabPage" Spacing="16">
+            <TextBlock
+              Classes="hint"
+              Text="Wähle je Tabelle die Felder, die an den Server gesendet werden. Aus der Auswahl wird das gesendete Objekt zusammengebaut. Schlüsselfelder werden immer gesendet."
+            />
+
+            <ItemsControl ItemsSource="{Binding Tables}">
+              <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <WrapPanel />
+                  <StackPanel Spacing="16" />
                 </ItemsPanelTemplate>
-            </Setter>
-        </Style>
-        <Style Selector="TabControl.settingsTabs TabItem">
-            <Setter Property="FontSize" Value="15" />
-            <Setter Property="MinHeight" Value="40" />
-        </Style>
+              </ItemsControl.ItemsPanel>
+              <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="vm:DataTableViewModel">
+                  <Border Classes="card">
+                    <StackPanel Spacing="10">
+                      <WrapPanel>
+                        <ToggleSwitch
+                          IsChecked="{Binding IsEnabled}"
+                          Content="{Binding Title}"
+                          FontSize="16"
+                          FontWeight="SemiBold"
+                          OnContent="{Binding Summary}"
+                          OffContent="Wird nicht gesendet"
+                          Margin="0,0,24,0"
+                        />
+                        <StackPanel
+                          Orientation="Horizontal"
+                          Spacing="8"
+                          VerticalAlignment="Bottom"
+                          IsEnabled="{Binding IsEnabled}"
+                        >
+                          <Button Content="Alle" Command="{Binding SelectAllCommand}" />
+                          <Button Content="Keine" Command="{Binding SelectNoneCommand}" />
+                        </StackPanel>
+                      </WrapPanel>
+                      <TextBlock Classes="hint" Text="{Binding Description}" />
 
-        <Style Selector="Border.card">
-            <Setter Property="VerticalAlignment" Value="Top" />
-            <Setter Property="Padding" Value="20" />
-            <Setter Property="CornerRadius" Value="8" />
-            <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="BorderBrush" Value="#33808080" />
-            <Setter Property="Background" Value="#0D808080" />
-        </Style>
-        <Style Selector="TextBlock.cardTitle">
-            <Setter Property="FontSize" Value="16" />
-            <Setter Property="FontWeight" Value="SemiBold" />
-        </Style>
-        <Style Selector="TextBlock.hint">
-            <Setter Property="FontSize" Value="12" />
-            <Setter Property="Opacity" Value="0.6" />
-            <Setter Property="TextWrapping" Value="Wrap" />
-        </Style>
-        <Style Selector="TextBlock.label">
-            <Setter Property="VerticalAlignment" Value="Center" />
-            <Setter Property="Margin" Value="0,0,16,0" />
-        </Style>
-        <Style Selector="TextBlock.error">
-            <Setter Property="Foreground" Value="#DC2626" />
-        </Style>
-        <Style Selector="Button.swatch">
-            <Setter Property="Width" Value="28" />
-            <Setter Property="Height" Value="28" />
-            <Setter Property="Padding" Value="0" />
-            <Setter Property="Margin" Value="0,0,8,8" />
-            <Setter Property="CornerRadius" Value="14" />
-        </Style>
-    </UserControl.Styles>
-
-    <Grid RowDefinitions="Auto,*,Auto">
-        <Panel Classes="pageHeader">
-            <TextBlock Classes="pageTitle" Text="Einstellungen" />
-        </Panel>
-
-        <TabControl Grid.Row="1" Classes="settingsTabs" SelectedIndex="{Binding SelectedTabIndex}">
-
-            <!-- Unterseite: Server -->
-            <TabItem Header="Server">
-                <ScrollViewer>
-                    <Grid Classes="tabPage">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" MaxWidth="760" />
-                            <ColumnDefinition Width="0.001*" />
-                        </Grid.ColumnDefinitions>
-                        <Border Classes="card">
-                            <StackPanel Spacing="10">
-                                <TextBlock Classes="cardTitle" Text="Server" />
-                                <TextBlock Classes="hint" Text="Wohin die Daten geschickt werden." />
-                                <TextBox Text="{Binding ServerUrl}"
-                                         PlaceholderText="https://mein-server.de/api" />
-                            </StackPanel>
-                        </Border>
-                    </Grid>
-                </ScrollViewer>
-            </TabItem>
-
-            <!-- Unterseite: Daten (Feldauswahl) -->
-            <TabItem Header="Daten">
-                <ScrollViewer>
-                    <StackPanel Classes="tabPage" Spacing="16">
-                        <TextBlock Classes="hint"
-                                   Text="Wähle je Tabelle die Felder, die an den Server gesendet werden. Aus der Auswahl wird das gesendete Objekt zusammengebaut. Schlüsselfelder werden immer gesendet." />
-
-                        <ItemsControl ItemsSource="{Binding Tables}">
-                            <ItemsControl.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <StackPanel Spacing="16" />
-                                </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate x:DataType="vm:DataTableViewModel">
-                                    <Border Classes="card">
-                                        <StackPanel Spacing="10">
-                                            <WrapPanel>
-                                                <ToggleSwitch IsChecked="{Binding IsEnabled}"
-                                                              Content="{Binding Title}"
-                                                              FontSize="16" FontWeight="SemiBold"
-                                                              OnContent="{Binding Summary}"
-                                                              OffContent="Wird nicht gesendet"
-                                                              Margin="0,0,24,0" />
-                                                <StackPanel Orientation="Horizontal" Spacing="8"
-                                                            VerticalAlignment="Bottom"
-                                                            IsEnabled="{Binding IsEnabled}">
-                                                    <Button Content="Alle" Command="{Binding SelectAllCommand}" />
-                                                    <Button Content="Keine" Command="{Binding SelectNoneCommand}" />
-                                                </StackPanel>
-                                            </WrapPanel>
-                                            <TextBlock Classes="hint" Text="{Binding Description}" />
-
-                                            <ItemsControl ItemsSource="{Binding Fields}"
-                                                          IsEnabled="{Binding IsEnabled}">
-                                                <ItemsControl.ItemsPanel>
-                                                    <ItemsPanelTemplate>
-                                                        <WrapPanel />
-                                                    </ItemsPanelTemplate>
-                                                </ItemsControl.ItemsPanel>
-                                                <ItemsControl.ItemTemplate>
-                                                    <DataTemplate x:DataType="vm:FieldOptionViewModel">
-                                                        <CheckBox Width="180"
-                                                                  Content="{Binding Name}"
-                                                                  IsChecked="{Binding IsSelected}"
-                                                                  IsEnabled="{Binding !IsRequired}" />
-                                                    </DataTemplate>
-                                                </ItemsControl.ItemTemplate>
-                                            </ItemsControl>
-                                        </StackPanel>
-                                    </Border>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-
-                        <Border Classes="card">
-                            <StackPanel Spacing="6">
-                                <TextBlock Classes="cardTitle" Text="Optionen" />
-                                <ToggleSwitch IsChecked="{Binding SendProbeschuesse}"
-                                              IsEnabled="{Binding TrefferTable.IsEnabled}"
-                                              Content="Probeschüsse mitsenden"
-                                              OnContent="An" OffContent="Aus" />
-                            </StackPanel>
-                        </Border>
-
-                        <Border Classes="card">
-                            <Expander Header="Vorschau des gesendeten Objekts" HorizontalAlignment="Stretch">
-                                <ScrollViewer HorizontalScrollBarVisibility="Auto" MaxHeight="360">
-                                    <SelectableTextBlock Text="{Binding PayloadPreview}"
-                                                         FontFamily="Cascadia Mono,Consolas,Menlo,monospace"
-                                                         FontSize="12" />
-                                </ScrollViewer>
-                            </Expander>
-                        </Border>
+                      <ItemsControl ItemsSource="{Binding Fields}" IsEnabled="{Binding IsEnabled}">
+                        <ItemsControl.ItemsPanel>
+                          <ItemsPanelTemplate>
+                            <WrapPanel />
+                          </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                          <DataTemplate x:DataType="vm:FieldOptionViewModel">
+                            <CheckBox
+                              Width="180"
+                              Content="{Binding Name}"
+                              IsChecked="{Binding IsSelected}"
+                              IsEnabled="{Binding !IsRequired}"
+                            />
+                          </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                      </ItemsControl>
                     </StackPanel>
+                  </Border>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <Border Classes="card">
+              <StackPanel Spacing="6">
+                <TextBlock Classes="cardTitle" Text="Optionen" />
+                <ToggleSwitch
+                  IsChecked="{Binding SendProbeschuesse}"
+                  IsEnabled="{Binding TrefferTable.IsEnabled}"
+                  Content="Probeschüsse mitsenden"
+                  OnContent="An"
+                  OffContent="Aus"
+                />
+              </StackPanel>
+            </Border>
+
+            <Border Classes="card">
+              <Expander Header="Vorschau des gesendeten Objekts" HorizontalAlignment="Stretch">
+                <ScrollViewer HorizontalScrollBarVisibility="Auto" MaxHeight="360">
+                  <SelectableTextBlock
+                    Text="{Binding PayloadPreview}"
+                    FontFamily="Cascadia Mono,Consolas,Menlo,monospace"
+                    FontSize="12"
+                  />
                 </ScrollViewer>
-            </TabItem>
+              </Expander>
+            </Border>
+          </StackPanel>
+        </ScrollViewer>
+      </TabItem>
 
-            <!-- Unterseite: Darstellung -->
-            <TabItem Header="Darstellung">
-                <ScrollViewer>
-                    <Grid Classes="tabPage">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" MaxWidth="760" />
-                            <ColumnDefinition Width="0.001*" />
-                        </Grid.ColumnDefinitions>
-                        <Border Classes="card">
-                            <StackPanel Spacing="10">
-                                <TextBlock Classes="cardTitle" Text="Hauptfarbe" />
-                                <TextBlock Classes="hint"
-                                           Text="Die Farbe wird sofort als Vorschau angewendet und mit „Speichern“ übernommen." />
-                                <WrapPanel>
-                                    <ColorPicker Color="{Binding PrimaryColor, Mode=TwoWay}"
-                                                 IsAlphaEnabled="False"
-                                                 IsAlphaVisible="False"
-                                                 Margin="0,0,16,8" />
-                                    <Button Classes="swatch" Background="#2563EB" ToolTip.Tip="Blau"
-                                            Command="{Binding SelectPresetColorCommand}" CommandParameter="#2563EB" />
-                                    <Button Classes="swatch" Background="#059669" ToolTip.Tip="Grün"
-                                            Command="{Binding SelectPresetColorCommand}" CommandParameter="#059669" />
-                                    <Button Classes="swatch" Background="#DC2626" ToolTip.Tip="Rot"
-                                            Command="{Binding SelectPresetColorCommand}" CommandParameter="#DC2626" />
-                                    <Button Classes="swatch" Background="#D97706" ToolTip.Tip="Orange"
-                                            Command="{Binding SelectPresetColorCommand}" CommandParameter="#D97706" />
-                                    <Button Classes="swatch" Background="#7C3AED" ToolTip.Tip="Violett"
-                                            Command="{Binding SelectPresetColorCommand}" CommandParameter="#7C3AED" />
-                                    <Button Classes="swatch" Background="#475569" ToolTip.Tip="Grau"
-                                            Command="{Binding SelectPresetColorCommand}" CommandParameter="#475569" />
-                                </WrapPanel>
-                            </StackPanel>
-                        </Border>
-                    </Grid>
-                </ScrollViewer>
-            </TabItem>
+      <!-- Unterseite: Darstellung -->
+      <TabItem Header="Darstellung">
+        <ScrollViewer>
+          <Grid Classes="tabPage">
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="*" MaxWidth="760" />
+              <ColumnDefinition Width="0.001*" />
+            </Grid.ColumnDefinitions>
+            <Border Classes="card">
+              <StackPanel Spacing="10">
+                <TextBlock Classes="cardTitle" Text="Hauptfarbe" />
+                <TextBlock
+                  Classes="hint"
+                  Text="Die Farbe wird sofort als Vorschau angewendet und mit „Speichern“ übernommen."
+                />
+                <WrapPanel>
+                  <ColorPicker
+                    Color="{Binding PrimaryColor, Mode=TwoWay}"
+                    IsAlphaEnabled="False"
+                    IsAlphaVisible="False"
+                    Margin="0,0,16,8"
+                  />
+                  <Button
+                    Classes="swatch"
+                    Background="#2563EB"
+                    ToolTip.Tip="Blau"
+                    Command="{Binding SelectPresetColorCommand}"
+                    CommandParameter="#2563EB"
+                  />
+                  <Button
+                    Classes="swatch"
+                    Background="#059669"
+                    ToolTip.Tip="Grün"
+                    Command="{Binding SelectPresetColorCommand}"
+                    CommandParameter="#059669"
+                  />
+                  <Button
+                    Classes="swatch"
+                    Background="#DC2626"
+                    ToolTip.Tip="Rot"
+                    Command="{Binding SelectPresetColorCommand}"
+                    CommandParameter="#DC2626"
+                  />
+                  <Button
+                    Classes="swatch"
+                    Background="#D97706"
+                    ToolTip.Tip="Orange"
+                    Command="{Binding SelectPresetColorCommand}"
+                    CommandParameter="#D97706"
+                  />
+                  <Button
+                    Classes="swatch"
+                    Background="#7C3AED"
+                    ToolTip.Tip="Violett"
+                    Command="{Binding SelectPresetColorCommand}"
+                    CommandParameter="#7C3AED"
+                  />
+                  <Button
+                    Classes="swatch"
+                    Background="#475569"
+                    ToolTip.Tip="Grau"
+                    Command="{Binding SelectPresetColorCommand}"
+                    CommandParameter="#475569"
+                  />
+                </WrapPanel>
+              </StackPanel>
+            </Border>
+          </Grid>
+        </ScrollViewer>
+      </TabItem>
 
-            <!-- Unterseite: Synchronisation -->
-            <TabItem Header="Synchronisation">
-                <ScrollViewer>
-                    <Grid Classes="tabPage">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" MaxWidth="760" />
-                            <ColumnDefinition Width="0.001*" />
-                        </Grid.ColumnDefinitions>
-                        <Border Classes="card">
-                            <StackPanel Spacing="10">
-                                <TextBlock Classes="cardTitle" Text="Intervall" />
-                                <ComboBox ItemsSource="{Binding SyncIntervalOptions}"
-                                          SelectedItem="{Binding SelectedSyncInterval}"
-                                          DisplayMemberBinding="{Binding Label}"
-                                          MinWidth="200" />
-                                <TextBlock Classes="hint"
-                                           Text="Die automatische Synchronisation ist noch nicht aktiv – das Intervall wird nur gespeichert." />
-                            </StackPanel>
-                        </Border>
-                    </Grid>
-                </ScrollViewer>
-            </TabItem>
+      <!-- Unterseite: Synchronisation -->
+      <TabItem Header="Synchronisation">
+        <ScrollViewer>
+          <Grid Classes="tabPage">
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="*" MaxWidth="760" />
+              <ColumnDefinition Width="0.001*" />
+            </Grid.ColumnDefinitions>
+            <Border Classes="card">
+              <StackPanel Spacing="10">
+                <TextBlock Classes="cardTitle" Text="Intervall" />
+                <ComboBox
+                  ItemsSource="{Binding SyncIntervalOptions}"
+                  SelectedItem="{Binding SelectedSyncInterval}"
+                  DisplayMemberBinding="{Binding Label}"
+                  MinWidth="200"
+                />
+                <TextBlock
+                  Classes="hint"
+                  Text="Die automatische Synchronisation ist noch nicht aktiv – das Intervall wird nur gespeichert."
+                />
+              </StackPanel>
+            </Border>
+          </Grid>
+        </ScrollViewer>
+      </TabItem>
 
-            <!-- Unterseite: Datenbank -->
-            <TabItem Header="Datenbank">
-                <ScrollViewer>
-                    <Grid Classes="tabPage">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" MaxWidth="760" />
-                            <ColumnDefinition Width="0.001*" />
-                        </Grid.ColumnDefinitions>
-                        <Border Classes="card">
-                            <StackPanel Spacing="10">
-                                <TextBlock Classes="cardTitle" Text="Datenbank" />
-                                <TextBlock Classes="hint"
-                                           Text="Zugang zur Meyton-Datenbank (SSMDB2). Das Passwort wird unverschlüsselt in der Einstellungsdatei gespeichert." />
-                                <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto" RowSpacing="8">
-                                    <TextBlock Grid.Row="0" Classes="label" Text="Adresse" />
-                                    <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding DbHost}"
-                                             PlaceholderText="localhost oder 192.168.0.10" />
+      <!-- Unterseite: Datenbank -->
+      <TabItem Header="Datenbank">
+        <ScrollViewer>
+          <Grid Classes="tabPage">
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="*" MaxWidth="760" />
+              <ColumnDefinition Width="0.001*" />
+            </Grid.ColumnDefinitions>
+            <Border Classes="card">
+              <StackPanel Spacing="10">
+                <TextBlock Classes="cardTitle" Text="Datenbank" />
+                <TextBlock
+                  Classes="hint"
+                  Text="Zugang zur Meyton-Datenbank (SSMDB2). Das Passwort wird unverschlüsselt in der Einstellungsdatei gespeichert."
+                />
+                <Grid
+                  ColumnDefinitions="Auto,*"
+                  RowDefinitions="Auto,Auto,Auto,Auto,Auto"
+                  RowSpacing="8"
+                >
+                  <TextBlock Grid.Row="0" Classes="label" Text="Adresse" />
+                  <TextBox
+                    Grid.Row="0"
+                    Grid.Column="1"
+                    Text="{Binding DbHost}"
+                    PlaceholderText="localhost oder 192.168.0.10"
+                  />
 
-                                    <TextBlock Grid.Row="1" Classes="label" Text="Port" />
-                                    <NumericUpDown Grid.Row="1" Grid.Column="1" Value="{Binding DbPort}"
-                                                   Minimum="1" Maximum="65535" Increment="1" FormatString="0"
-                                                   MaxWidth="160" HorizontalAlignment="Left" />
+                  <TextBlock Grid.Row="1" Classes="label" Text="Port" />
+                  <NumericUpDown
+                    Grid.Row="1"
+                    Grid.Column="1"
+                    Value="{Binding DbPort}"
+                    Minimum="1"
+                    Maximum="65535"
+                    Increment="1"
+                    FormatString="0"
+                    MaxWidth="160"
+                    HorizontalAlignment="Left"
+                  />
 
-                                    <TextBlock Grid.Row="2" Classes="label" Text="Benutzer" />
-                                    <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding DbUser}" />
+                  <TextBlock Grid.Row="2" Classes="label" Text="Benutzer" />
+                  <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding DbUser}" />
 
-                                    <TextBlock Grid.Row="3" Classes="label" Text="Passwort" />
-                                    <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding DbPassword}" PasswordChar="•" />
+                  <TextBlock Grid.Row="3" Classes="label" Text="Passwort" />
+                  <TextBox
+                    Grid.Row="3"
+                    Grid.Column="1"
+                    Text="{Binding DbPassword}"
+                    PasswordChar="•"
+                  />
 
-                                    <TextBlock Grid.Row="4" Classes="label" Text="Datenbankname" />
-                                    <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding DbName}" PlaceholderText="SSMDB2" />
-                                </Grid>
-                                <Button Content="Verbindung testen" Command="{Binding TestDatabaseCommand}" />
-                                <TextBlock Text="{Binding DbTestMessage}"
-                                           Classes.error="{Binding DbTestIsError}"
-                                           TextWrapping="Wrap" />
-                            </StackPanel>
-                        </Border>
-                    </Grid>
-                </ScrollViewer>
-            </TabItem>
-        </TabControl>
+                  <TextBlock Grid.Row="4" Classes="label" Text="Datenbankname" />
+                  <TextBox
+                    Grid.Row="4"
+                    Grid.Column="1"
+                    Text="{Binding DbName}"
+                    PlaceholderText="SSMDB2"
+                  />
+                </Grid>
+                <Button Content="Verbindung testen" Command="{Binding TestDatabaseCommand}" />
+                <TextBlock
+                  Text="{Binding DbTestMessage}"
+                  Classes.error="{Binding DbTestIsError}"
+                  TextWrapping="Wrap"
+                />
+              </StackPanel>
+            </Border>
+          </Grid>
+        </ScrollViewer>
+      </TabItem>
+    </TabControl>
 
-        <!-- Fusszeile: gilt fuer alle Unterseiten -->
-        <Border Grid.Row="2" BorderBrush="#33808080" BorderThickness="0,1,0,0">
-            <WrapPanel Classes="footer">
-                <Button Classes="primary" Content="Speichern" Command="{Binding SaveCommand}" Margin="0,0,12,0" />
-                <Button Content="Zurücksetzen" Command="{Binding ResetCommand}" Margin="0,0,12,0" />
-                <TextBlock Text="{Binding StatusMessage}"
-                           Classes.error="{Binding StatusIsError}"
-                           TextWrapping="Wrap"
-                           VerticalAlignment="Center" />
-            </WrapPanel>
-        </Border>
-    </Grid>
+    <!-- Fusszeile: gilt fuer alle Unterseiten -->
+    <Border Grid.Row="2" BorderBrush="#33808080" BorderThickness="0,1,0,0">
+      <WrapPanel Classes="footer">
+        <Button
+          Classes="primary"
+          Content="Speichern"
+          Command="{Binding SaveCommand}"
+          Margin="0,0,12,0"
+        />
+        <Button Content="Zurücksetzen" Command="{Binding ResetCommand}" Margin="0,0,12,0" />
+        <TextBlock
+          Text="{Binding StatusMessage}"
+          Classes.error="{Binding StatusIsError}"
+          TextWrapping="Wrap"
+          VerticalAlignment="Center"
+        />
+      </WrapPanel>
+    </Border>
+  </Grid>
 </UserControl>
