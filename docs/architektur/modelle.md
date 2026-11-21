@@ -21,7 +21,8 @@ In allen Versionen identisch.
 
 ::: info Abweichende Namen
 Die Spalte heißt `Serie`, die Property `SerieNr`. Ebenso bei Treffern: Spalte `Treffer`,
-Property `TrefferNr`.
+Property `TrefferNr`. `SsmdbQueries` benennt diese Spalten im `SELECT` per Alias um
+(`` `Serie` AS `SerieNr` ``), damit Dapper sie zuordnen kann.
 :::
 
 ## Treffer

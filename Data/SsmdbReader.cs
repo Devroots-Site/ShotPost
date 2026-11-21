@@ -1,10 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data.Common;
-using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
+using Dapper;
 using MySqlConnector;
 using ShotPost.Models;
 
@@ -57,45 +56,39 @@ public static class SsmdbReader
         var schema = await SsmdbSchemaDetector.DetectAsync(connection, databaseName, ct);
 
         // Tabellenname stammt aus der festen Liste unten, nie aus Nutzereingaben.
-        IList rows = table switch
-        {
-            SsmdbSchema.TabelleScheiben => new List<Scheibe>(),
-            SsmdbSchema.TabelleSerien => new List<Serie>(),
-            SsmdbSchema.TabelleTreffer => new List<Treffer>(),
-            _ => throw new ArgumentException($"Unbekannte Tabelle '{table}'.", nameof(table)),
-        };
         var sql = table switch
         {
             SsmdbSchema.TabelleScheiben => SsmdbQueries.Scheiben(schema),
             SsmdbSchema.TabelleSerien => SsmdbQueries.Serien(schema),
-            _ => SsmdbQueries.Treffer(schema),
-        };
-        Func<DbDataReader, object> map = table switch
-        {
-            SsmdbSchema.TabelleScheiben => SsmdbMapper.ReadScheibe,
-            SsmdbSchema.TabelleSerien => SsmdbMapper.ReadSerie,
-            _ => SsmdbMapper.ReadTreffer,
+            SsmdbSchema.TabelleTreffer => SsmdbQueries.Treffer(schema),
+            _ => throw new ArgumentException($"Unbekannte Tabelle '{table}'.", nameof(table)),
         };
 
-        long total;
-        await using (var countCmd = new MySqlCommand($"SELECT COUNT(*) FROM `{table}`", connection))
-            total = Convert.ToInt64(
-                await countCmd.ExecuteScalarAsync(ct),
-                CultureInfo.InvariantCulture
-            );
+        var total = await connection.ExecuteScalarAsync<long>(
+            new CommandDefinition($"SELECT COUNT(*) FROM `{table}`", cancellationToken: ct)
+        );
 
-        await using var cmd = new MySqlCommand(sql, connection);
+        object? param = null;
         if (limit is { } pageSize)
         {
-            cmd.CommandText += " LIMIT @limit OFFSET @offset";
-            cmd.Parameters.AddWithValue("@limit", pageSize);
-            cmd.Parameters.AddWithValue("@offset", offset);
+            sql += " LIMIT @limit OFFSET @offset";
+            param = new { limit = pageSize, offset };
         }
 
-        await using var reader = await cmd.ExecuteReaderAsync(ct);
-        while (await reader.ReadAsync(ct))
-            rows.Add(map(reader));
+        var query = new CommandDefinition(sql, param, cancellationToken: ct);
+        IList rows = table switch
+        {
+            SsmdbSchema.TabelleScheiben => await QueryAsync<Scheibe>(connection, query),
+            SsmdbSchema.TabelleSerien => await QueryAsync<Serie>(connection, query),
+            _ => await QueryAsync<Treffer>(connection, query),
+        };
 
         return new SsmdbPage(rows, total, schema.VersionLabel);
     }
+
+    // Dapper mappt Spalten ueber den Namen auf die Properties (Gross-/Kleinschreibung egal).
+    private static async Task<List<T>> QueryAsync<T>(
+        MySqlConnection connection,
+        CommandDefinition query
+    ) => (await connection.QueryAsync<T>(query)).AsList();
 }

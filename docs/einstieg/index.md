@@ -25,7 +25,7 @@ gesendet. Der [`PayloadBuilder`](/architektur/payload) wird bisher nur für die 
 | Sprache / Laufzeit | C# auf .NET 10 (`global.json` legt das SDK fest) |
 | Oberfläche | [Avalonia UI](https://docs.avaloniaui.net/) 12 mit Fluent-Theme |
 | MVVM | [CommunityToolkit.Mvvm](https://learn.microsoft.com/dotnet/communitytoolkit/mvvm/) |
-| Datenbank | [MySqlConnector](https://mysqlconnector.net/) gegen MariaDB/MySQL |
+| Datenbank | [MySqlConnector](https://mysqlconnector.net/) gegen MariaDB/MySQL, Mapping mit [Dapper](https://www.learndapper.com/) |
 | Formatierung | [CSharpier](https://csharpier.com/) als lokales dotnet-Tool |
 | CI | GitHub Actions (`.github/workflows/ci.yml`) |
 

@@ -29,6 +29,7 @@ export default defineConfig({
             link: 'https://learn.microsoft.com/dotnet/communitytoolkit/mvvm/',
           },
           { text: 'MySqlConnector', link: 'https://mysqlconnector.net/' },
+          { text: 'Dapper', link: 'https://www.learndapper.com/' },
           { text: 'CSharpier', link: 'https://csharpier.com/' },
           { text: 'VitePress', link: 'https://vitepress.dev/' },
         ],

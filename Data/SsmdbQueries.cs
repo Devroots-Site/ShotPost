@@ -4,14 +4,25 @@ using System.Linq;
 namespace ShotPost.Data;
 
 /// <summary>
-/// Baut SELECT-Statements, die in JEDER Schemaversion dieselben Spalten in derselben Reihenfolge
-/// liefern: fehlende Spalten kommen als "NULL AS Spalte" zurueck. So reicht ein einziger Mapper.
+/// Eine Spalte im SELECT. <see cref="Alias"/> nur setzen, wenn die Property im Modell anders heisst
+/// als die Spalte in der Datenbank (Dapper mappt ueber den Namen).
+/// </summary>
+public sealed record SsmdbColumn(string Name, string? Alias = null)
+{
+    public static implicit operator SsmdbColumn(string name) => new(name);
+
+    /// <summary>Name, unter dem die Spalte im Ergebnis erscheint.</summary>
+    public string ResultName => Alias ?? Name;
+}
+
+/// <summary>
+/// Baut SELECT-Statements, die in JEDER Schemaversion dieselben Spaltennamen liefern: fehlende
+/// Spalten kommen als "NULL AS Spalte" zurueck. So mappt Dapper alle Versionen auf dieselben Modelle.
 /// Alle Namen stammen aus festen Listen (kein Nutzer-Input im SQL).
 /// </summary>
 public static class SsmdbQueries
 {
-    // Reihenfolge = Ordinal im Reader (siehe SsmdbMapper).
-    public static readonly string[] ScheibenColumns =
+    public static readonly SsmdbColumn[] ScheibenColumns =
     [
         "ScheibenID",
         "Starterliste",
@@ -46,20 +57,20 @@ public static class SsmdbQueries
         "Zeitstempel",
     ];
 
-    public static readonly string[] SerienColumns =
+    public static readonly SsmdbColumn[] SerienColumns =
     [
         "ScheibenID",
         "Stellung",
-        "Serie",
+        new("Serie", "SerieNr"),
         "Ring",
         "Ring01",
     ];
 
-    public static readonly string[] TrefferColumns =
+    public static readonly SsmdbColumn[] TrefferColumns =
     [
         "ScheibenID",
         "Stellung",
-        "Treffer",
+        new("Treffer", "TrefferNr"),
         "Serie",
         "x",
         "y",
@@ -99,19 +110,23 @@ public static class SsmdbQueries
     private static string Build(
         SsmdbSchema schema,
         string table,
-        IEnumerable<string> columns,
+        IEnumerable<SsmdbColumn> columns,
         string? where,
         string orderBy
     )
     {
-        var select = string.Join(
-            ", ",
-            columns.Select(c => schema.Has(table, c) ? $"`{c}`" : $"NULL AS `{c}`")
-        );
+        var select = string.Join(", ", columns.Select(c => Select(schema, table, c)));
 
         var sql = $"SELECT {select} FROM `{table}`";
         if (!string.IsNullOrWhiteSpace(where))
             sql += $" WHERE {where}";
         return sql + $" ORDER BY {orderBy}";
+    }
+
+    private static string Select(SsmdbSchema schema, string table, SsmdbColumn c)
+    {
+        if (!schema.Has(table, c.Name))
+            return $"NULL AS `{c.ResultName}`";
+        return c.Alias is null ? $"`{c.Name}`" : $"`{c.Name}` AS `{c.Alias}`";
     }
 }

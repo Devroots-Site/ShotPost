@@ -16,7 +16,7 @@ darunter liegen Services und der Datenzugriff.
 ┌───────▼──────────────┐   ┌───────────▼───────────────────┐
 │ Services             │   │ Data                          │
 │ SettingsService      │   │ SsmdbReader → SchemaDetector  │
-│ ThemeService         │   │ → SsmdbQueries → SsmdbMapper  │
+│ ThemeService         │   │ → SsmdbQueries → Dapper       │
 │ PayloadBuilder       │   │                               │
 └───────┬──────────────┘   └───────────┬───────────────────┘
         │                              │
