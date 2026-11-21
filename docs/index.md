@@ -30,7 +30,7 @@ features:
     link: /architektur/
   - icon: 🎯
     title: Datenzugriff
-    details: Ein Mapper für alle SSMDB2-Versionen dank Feature-Erkennung statt Versionsnummern.
+    details: Dieselben Modelle für alle SSMDB2-Versionen dank Feature-Erkennung statt Versionsnummern.
     link: /architektur/datenzugriff
   - icon: 🧩
     title: Framework
