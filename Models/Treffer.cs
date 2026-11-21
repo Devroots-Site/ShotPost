@@ -10,15 +10,20 @@ public sealed class Treffer
 {
     public int ScheibenID { get; set; }
     public short Stellung { get; set; }
+
     /// <summary>Fortlaufende Nummer des Treffers innerhalb der Stellung (Spalte "Treffer").</summary>
     public short TrefferNr { get; set; }
+
     /// <summary>Ab V8: Nummer der Serie, zu der der Treffer gehoert.</summary>
     public short? Serie { get; set; }
+
     /// <summary>x-Koordinate in 1/100 mm, Ursprung = Scheibenmittelpunkt.</summary>
     public int? X { get; set; }
+
     /// <summary>y-Koordinate in 1/100 mm, Ursprung = Scheibenmittelpunkt.</summary>
     public int? Y { get; set; }
     public bool? Innenzehner { get; set; }
+
     /// <summary>Wertungsmodus 0..12, siehe <see cref="Wertungsmodus"/>.</summary>
     public int? Wertung { get; set; }
     public string? Text { get; set; }

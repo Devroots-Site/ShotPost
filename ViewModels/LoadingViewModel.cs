@@ -8,7 +8,8 @@ public partial class LoadingViewModel : ViewModelBase
     public partial string Title { get; set; } = "ShootPost";
 
     [ObservableProperty]
-    public partial string Subtitle { get; set; } = "Deine Meyton-Ergebnisse, synchronisiert mit deinem Server";
+    public partial string Subtitle { get; set; } =
+        "Deine Meyton-Ergebnisse, synchronisiert mit deinem Server";
 
     [ObservableProperty]
     public partial string StatusText { get; set; } = "Wird geladen…";

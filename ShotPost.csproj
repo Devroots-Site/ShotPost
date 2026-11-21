@@ -6,6 +6,17 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
 
+  <!-- Code-Qualitaet: Analyzer und .editorconfig-Stilregeln laufen im Build mit. -->
+  <PropertyGroup>
+    <AnalysisLevel>latest-recommended</AnalysisLevel>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <!-- Noetig, damit IDE0005 (ueberfluessige usings) im Build geprueft wird; CS1591/CS1573 = fehlende XML-Kommentare bzw. param-Tags. -->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);CS1591;CS1573</NoWarn>
+    <!-- In der CI-Pipeline (CI=true) brechen Warnungen den Build. -->
+    <TreatWarningsAsErrors Condition="'$(CI)' == 'true'">true</TreatWarningsAsErrors>
+  </PropertyGroup>
+
   <ItemGroup>
     <Folder Include="Models\" />
     <AvaloniaResource Include="Assets\**" />
@@ -13,6 +24,7 @@
 
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="12.1.6" />
+    <PackageReference Include="Avalonia.Controls.DataGrid" Version="12.1.2" />
     <PackageReference Include="Avalonia.Desktop" Version="12.1.6" />
     <PackageReference Include="Avalonia.Themes.Fluent" Version="12.1.6" />
     <PackageReference Include="Avalonia.Fonts.Inter" Version="12.1.6" />

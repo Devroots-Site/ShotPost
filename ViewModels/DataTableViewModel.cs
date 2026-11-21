@@ -27,7 +27,8 @@ public partial class DataTableViewModel : ViewModelBase
         Title = title;
         Description = description;
         ModelType = modelType;
-        Fields = PayloadBuilder.GetFieldNames(modelType)
+        Fields = PayloadBuilder
+            .GetFieldNames(modelType)
             .Select(n => new FieldOptionViewModel(n, PayloadBuilder.IsKeyField(modelType, n)))
             .ToList();
 
@@ -49,7 +50,8 @@ public partial class DataTableViewModel : ViewModelBase
 
     public string Summary => $"{Fields.Count(f => f.IsSelected)} von {Fields.Count} Feldern";
 
-    public List<string> SelectedFieldNames => Fields.Where(f => f.IsSelected).Select(f => f.Name).ToList();
+    public List<string> SelectedFieldNames =>
+        Fields.Where(f => f.IsSelected).Select(f => f.Name).ToList();
 
     /// <param name="isEnabled">Ob die Tabelle gesendet wird.</param>
     /// <param name="selectedFields">Ausgewaehlte Feldnamen; <c>null</c> = alle.</param>
@@ -57,7 +59,8 @@ public partial class DataTableViewModel : ViewModelBase
     {
         IsEnabled = isEnabled;
         foreach (var field in Fields)
-            field.IsSelected = field.IsRequired || selectedFields is null || selectedFields.Contains(field.Name);
+            field.IsSelected =
+                field.IsRequired || selectedFields is null || selectedFields.Contains(field.Name);
     }
 
     [RelayCommand]

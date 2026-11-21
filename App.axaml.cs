@@ -20,13 +20,11 @@ public partial class App : Application
         {
             var settingsService = new SettingsService();
             ThemeService.ApplyPrimaryColor(
-                ThemeService.ParseOrDefault(settingsService.Load().PrimaryColor));
+                ThemeService.ParseOrDefault(settingsService.Load().PrimaryColor)
+            );
 
             var mainViewModel = new MainViewModel(settingsService);
-            desktop.MainWindow = new MainWindow
-            {
-                DataContext = mainViewModel,
-            };
+            desktop.MainWindow = new MainWindow { DataContext = mainViewModel };
             _ = mainViewModel.InitializeAsync();
         }
 
